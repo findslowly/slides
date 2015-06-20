@@ -11,8 +11,10 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows}
 \tikzstyle{arrow} = [thick,->,>=stealth]
-\tikzstyle{roundRec} = [rectangle, rounded corners, minimum width=2cm, minimum height=1cm,text centered, draw=black]
+\tikzstyle{roundRec} = [rectangle, rounded corners, minimum width=2cm, minimum height=0.8cm,text centered, draw=black]
+\tikzstyle{rec} = [rectangle, minimum width=2cm, minimum height=0.8cm,text centered, draw=black]
 \DeclareGraphicsExtensions{.pdf,.eps,.png,.jpg,.jpeg}
+\graphicspath{{./figure/}}
 
 \setbeamertemplate{items}[circle]
 \usetheme{Warsaw}
@@ -150,56 +152,206 @@
 	\frametitle{Audible Event Taxonomy}	
 	We labelled common audible events into 4 classes,\\
 	there are 120 events in total. \\ 
-	\vspace{1cm}
+	\vspace{0.5cm}
 	\begin{tikzpicture}[node distance=1.5cm]
 		\node (event) [roundRec] {Audible Events}; 
 		\node (human) [roundRec, below of=event, xshift=-4cm] {Human}; 
 		\node (nonliving) [roundRec, below of=event, xshift=-1.25cm] {Non-Living}; 
 		\node (nature) [roundRec, below of=event, xshift=1.25cm] {Nature}; 
 		\node (other) [roundRec, below of=event, xshift=4cm] {Other Sound}; 
+		\node (movement) [roundRec, below of=human] {Movement}; 
+		\node (nonmovement) [roundRec, below of=human, xshift=3cm] {Non-Movement}; 
+		\node (events) [rec, below of=nonmovement] {cough, laughter, ...}; 
 		\draw [arrow] (event) -- (human);
 		\draw [arrow] (event) -- (nonliving);
 		\draw [arrow] (event) -- (nature);
 		\draw [arrow] (event) -- (other); 
+		\draw [arrow] (human) -- (movement); 
+		\draw [arrow] (human) -- (nonmovement); 
+		\draw [arrow] (nonmovement) -- (events); 
 	\end{tikzpicture}
 \end{frame}
 % ------------------------------------------
 \subsection{Audio Data}
 \begin{frame}
   \frametitle{Audio Data}	
-	We download the audio data for events from Sound Search Engines (SSEs). 
-	(List SSEs here)
+	We download the audio data for events from \\ Sound Search Engines (SSEs). \\ 
+	For example, when query ``cough'' in SSE: \\ 
+	\includegraphics[scale=0.4]{figure/cough.png}
 \end{frame}
 % ------------------------------------------
-\subsection{Feature Extraction}
+\subsection{Preprocess and Feature Extraction}
+\begin{frame}
+	\frametitle{Noise Reduction}
+	denoise here
+\end{frame}
+% ------------------------------------------
 \begin{frame}
 	\frametitle{Feature Extraction}
-	The features we used for training model for audible events are MFCCs. 
+	The features we extracted from audios are \\ 
+	Mel-Frequency Cepstral Coefficients (MFCCs). 
+	% flowchart of mfcc 
+	\begin{tikzpicture}[node distance=1.2cm]
+		\node (audio) [roundRec] {Audio}; 
+		\node (frame) [roundRec, below of=audio] {Framing and Windowing}; 
+		\node (fft) [roundRec, below of=frame] {Fast Fourier Transform (FFT)}; 
+		\node (mel) [roundRec, below of=fft] {Mel filtering}; 
+		\node (envelope) [roundRec, below of=mel] {Extract spectral envelope}; 
+		\node (mfcc) [roundRec, below of=envelope] {MFCCs}; 
+		\draw [arrow] (audio) -- (frame);
+		\draw [arrow] (frame) -- (fft); 
+		\draw [arrow] (fft) -- (mel); 
+		\draw [arrow] (mel) -- (envelope); 
+		\draw [arrow] (envelope) -- (mfcc); 
+	\end{tikzpicture}
+	
 \end{frame}
 % ------------------------------------------
 \subsection{Event Model}
 \begin{frame}
 	\frametitle{Event Model}	
 	We use Gaussian Mixture Models to train the features. 
-	(Explain why using GMMs)
+	\begin{figure}
+		\resizebox{0.8\totalheight}{!}{\input{figure/gmm.tex}}
+		\caption{GMM with three components}
+	\end{figure}
 \end{frame}
 % ------------------------------------------
 \section{Scene Recognition}
 \subsection{Scene-Event Map}
 \begin{frame}
-	\frametitle{Script Data}	
-	We use the scripts for movies, plays and TV series to extract the scenes. 
+	\frametitle{Scene Extraction}	
+	We use the scripts for movies, plays and TV series to extract the scenes. \\ 
+	Below is a script example. 
+	We call it a \textit{context}, including a scene, and some descriptive sentences. 
+	\begin{table}[h]
+		\begin{tabular}{|l|}
+		\hline
+		INT. LEONARD'S \textcolor{red}{BATHROOM} - Night \\ 
+		Leonard turns on the light, revealing a shower, toilet and sink.\\
+		He removes toiletries from the grocery bag and places them inside. \\ 
+		\hline
+		\end{tabular}
+	\end{table}
+
+\end{frame}
+% ------------------------------------------
+\begin{frame}
+	\frametitle{Scene Extraction}
+	We use Natural Language Process (NLP) tools to process a context, and eliminate the following type of words: \\ 
+	\begin{itemize}
+		\item{Person names} 
+		\item{Time indicator}
+		\item{Adjective, determiner, ...}
+	\end{itemize}
+	\pause 
+	
+	\begin{table}[htb]
+	\centering
+	\caption{Top 10 Occurred Scenes}
+	\resizebox{0.3\textwidth}{!}{
+		\begin{tabular}{ll}
+		\hline
+		Scene & Occurrence \\
+		\hline
+		house & 3537 \\ 
+		office & 3259 \\ 
+		apartment & 2919 \\ 
+		room & 2580 \\ 
+		bedroom & 2257 \\ 
+		car & 1699 \\ 
+		street & 1622 \\ 
+		kitchen & 1431 \\ 
+		living room & 1374 \\ 
+		tardis & 1259 \\ 
+		\hline
+		\end{tabular}
+	}
+	\end{table}
 \end{frame}
 % ------------------------------------------
 \begin{frame}
 	\frametitle{Scene-Event Relation Mining}
-	We calculate the TF-IDF scores for scenes and events. 
+	We first match audible events in a context, and count their occurrence. 
+	\begin{table}[h]
+		\begin{tabular}{|l|}
+		\hline
+		INT. LEONARD'S \textcolor{red}{BATHROOM} - Night \\ 
+		Leonard turns on the light, revealing a \textcolor{blue}{shower}, \textcolor{blue}{toilet} and \textcolor{blue}{sink}.\\
+		He removes toiletries from the grocery bag and places them inside. \\ 
+		\hline
+		\end{tabular}
+	\end{table}
+\end{frame}
+% ------------------------------------------
+\begin{frame}
+	\frametitle{Scene-Event Relation Mining}
+	Based on the idea of Term-Frequency-Inverse Document Frequency (TFIDF), we calculate two scores of an event $e$, to a scene $s$. 
+	\begin{enumerate}
+		\item{$TF=log(1+f(e,s))$}\\
+		$f(e,s)$ is the number of contexts $e$ appears in all contexts under scene $s$. 
+		\item{$IDF=1+log(\frac{N}{N_e})$} \\ 
+		$N$ is the number of scenes. 
+		$N_e$ is the number of scene that event $e$ appears. 
+	\end{enumerate}
+	These two scores are then multiplied, and used as the importance of an event to a scene. 		
+	\begin{equation}
+		TFIDF = TF \times IDF 
+	\end{equation}	
+\end{frame}
+% ------------------------------------------
+\begin{frame}
+	\begin{table}[htb!]
+	\caption{An example of scene-event map}
+	\resizebox{1\textwidth}{!}{
+	\begin{tabular}{ll}
+	\hline
+	Scene     & Top 10 events ranked by TF-IDf\\
+	\hline
+	bathroom & running+water, toilet, faucet, toothbrush, shower, drawer, drain, talk, paper, bowl \\ 
+	beach & seagull, sand, boat, talk, wave, sea, car, laughter, drink, wood, running \\ 
+	concert & piano, applause, crowd, chorus, child, cry, talk \\ 
+	forest & tree, wood, dirt, talk, running, bird, river, car, leaf, grass, wind\\ 
+	kitchen & drawer, cutlery, microwave, dish, kettle, talk, bowl, phone, toaster, running+water\\ 
+	office & desk, drawer, page+turn, talk, phone, printer, paper, chair, leaf, typewriter\\
+	park & talk, car, tree, laughter, dog, child, grass, crowd, running, phone\\ 
+	restaurant & talk, drink, laughter, phone, car, leaf, paper, dish, ring, chair, write \\ 
+	street & car, truck, subway, talk, traffic, engine, siren, phone, running, laughter \\ 
+	subway station & subway, train, car, tube, talk, pace, crowd, metal, phone, vehicle \\ 
+	\hline
+	\end{tabular}
+	}
+	\end{table}
 \end{frame}
 % ------------------------------------------
 \subsection{Audio Segmentation}
 \begin{frame}
 	\frametitle{Audio Segmentation}	
 	In testing, we segment the audio into smaller parts for event detection. 
+	We set two thresholds based on the following two features: 
+	\begin{enumerate}
+		\item{Frame Energy} \\ 
+		The averaged energy of a frame, calculated as: 
+		\begin{equation}
+		E_i = \frac{\sum\limits_{n=1}^N(x_i(n))}{N}
+		\end{equation}
+		\item{Spectral Centroid} \\ 
+		The ``center'' of frequency, calculated as: 
+		\begin{equation}
+		C_i = \frac{\sum\limits_{k=1}^Nk\times Amp(k)}{\sum\limits_{k=1}^NAmp(k)}
+		\end{equation}
+	\end{enumerate}
+\end{frame}
+% ------------------------------------------
+\begin{frame}
+	\frametitle{Audio Segmentation}
+	
+	\begin{figure}[htb]
+	\centering
+	\includegraphics[scale=0.5]{figure/segment.pdf}
+	\caption{A segmentation example}
+	\label{fig:segment}
+	\end{figure}
 \end{frame}
 % ------------------------------------------
 \subsection{Scene Inference}
