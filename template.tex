@@ -357,23 +357,67 @@
 \subsection{Scene Inference}
 \begin{frame}
 	\frametitle{Scene Inference}	
+	For each segment, we evaluate it with our trained GMMs. \\ 
+	Then we rank events by their posterior scores, the top three events are chosen as the candidates. 
+	We add the TFIDF scores to scene which contain the detected events. 
 \end{frame}
 % ------------------------------------------
 \section{Evaluation}
 \subsection{Event Detection Evaluation}
 \begin{frame}
+	\frametitle{Component Number Evaluation}
+	Event detection F-measure with different component numbers. \\ 	
+	\begin{figure}[htb!]
+	\centering
+	\resizebox{0.8\totalheight}{!}{\input{figure/component.tex}}
+	\caption{F-measure for different component number}
+	\label{fig:component}
+	\end{figure}
+\end{frame}
+% ------------------------------------------
+\begin{frame}
 	\frametitle{Event Detection Evaluation}
+	We compare our event detection with other systems. 	
+	\begin{figure}[htb!]
+	\centering
+	\resizebox{0.8\totalheight}{!}{\input{figure/eventdetectF1.tex}}
+	\caption{Event Detection F-Measure}
+	\label{fig:eventdetectF1}
+	\end{figure}
 \end{frame}
 % ------------------------------------------
 \subsection{Scene Recognition Evaluation}
 \begin{frame}
+	\frametitle{Denoise Evaluation}
+	
+	\begin{figure}[htb!]
+	\centering
+	\resizebox{0.8\totalheight}{!}{\input{figure/ourTuning.tex}}
+	\caption{Recognition accuracy for our different models}
+	\label{fig:ourTuning}
+	\end{figure}
+\end{frame}
+% ------------------------------------------
+\begin{frame}
 	\frametitle{Scene Recognition Evaluation}
+	
+	\begin{figure}[htb!]
+	\centering
+	\resizebox{0.8\totalheight}{!}{\input{figure/sceneeval.tex}}
+	\caption{Recognition accuracy for 10 audio scenes}
+	\label{fig:sceneeval}
+	\end{figure}
 \end{frame}
 % ------------------------------------------
 \section{Demo}
 \begin{frame}
 	\frametitle{Demo}
 	Live demo for our system. 
+\end{frame}
+% ------------------------------------------
+\begin{frame}
+	\frametitle{Acknowledgement}
+	I would like to thank my advisor Kenny Q. Zhu, and my friend Xinyu Hua for their help in this project. 
 \end{frame}
 % ------------------------------------------
 %\setbeamertemplate{background canvas}[vertical shading][bottom=white,top=structure.fg!25]
