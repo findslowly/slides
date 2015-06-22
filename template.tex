@@ -190,6 +190,8 @@
 	Then we extract Mel-Frequency Cepstral Coefficients (MFCCs) from denoised signal.\\  
 	\pause 
 	% flowchart of mfcc 
+	\begin{columns}[T]
+	\begin{column}{0.5\textwidth}
 	\begin{tikzpicture}[node distance=1cm]
 		\node (audio) [roundRecS] {Denoised signal}; 
 		\node (frame) [roundRecS, below of=audio] {Framing}; 
@@ -203,7 +205,15 @@
 		\draw [arrow] (mel) -- (envelope); 
 		\draw [arrow] (envelope) -- (mfcc); 
 	\end{tikzpicture}
-	
+	\end{column}	
+	\pause
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\includegraphics[scale=0.4]{figure/spectrum.eps}
+			\caption{Audio in frequency domain}
+		\end{figure}
+	\end{column}
+	\end{columns}
 \end{frame}
 % ------------------------------------------
 \subsection{Event Model}
@@ -224,7 +234,7 @@
 	\frametitle{Scene Extraction}	
 	We use the scripts for movies, plays and TV series to extract the scenes. \\ 
 	Below is a script example. 
-	We call it a \textit{context}, including a scene, and some descriptive sentences. 
+	We call it a \textit{context}, including a \textit{scene-switching sentence}, and its content. 
 	\begin{table}[h]
 		\begin{tabular}{|l|}
 		\hline
@@ -238,7 +248,7 @@
 % ------------------------------------------
 \begin{frame}
 	\frametitle{Scene Extraction}
-	We use Natural Language Process (NLP) tools to process a context, and eliminate the following type of words: \\ 
+	We use Natural Language Process (NLP) tools to process the \textit{scene-switching sentence}, and eliminate the following type of words: \\ 
 	\begin{itemize}
 		\item{Person names} 
 		\item{Time indicator}
@@ -306,21 +316,21 @@
 	\frametitle{Scene-Event Relation Mining}
 	\begin{table}[htb!]
 	\caption{An example of scene-event map}
-	\resizebox{1\textwidth}{!}{
+	\resizebox{0.8\textwidth}{!}{
 	\begin{tabular}{ll}
 	\hline
 	Scene     & Top 10 events ranked by TF-IDf\\
 	\hline
-	bathroom & running+water, toilet, faucet, toothbrush, shower, drawer, drain, talk, paper, bowl \\ 
-	beach & seagull, sand, boat, talk, wave, sea, car, laughter, drink, wood, running \\ 
-	concert & piano, applause, crowd, chorus, child, cry, talk \\ 
-	forest & tree, wood, dirt, talk, running, bird, river, car, leaf, grass, wind\\ 
-	kitchen & drawer, cutlery, microwave, dish, kettle, talk, bowl, phone, toaster, running+water\\ 
-	office & desk, drawer, page+turn, talk, phone, printer, paper, chair, leaf, typewriter\\
-	park & talk, car, tree, laughter, dog, child, grass, crowd, running, phone\\ 
-	restaurant & talk, drink, laughter, phone, car, leaf, paper, dish, ring, chair, write \\ 
-	street & car, truck, subway, talk, traffic, engine, siren, phone, running, laughter \\ 
-	subway station & subway, train, car, tube, talk, pace, crowd, metal, phone, vehicle \\ 
+	bathroom & running+water, toilet, faucet, toothbrush, \\ 
+		& shower, drawer, drain, talk, paper, bowl \\ 
+	beach & seagull, sand, boat, talk, wave, sea, \\ 
+		& car, laughter, drink, wood, running \\ 
+	forest & tree, wood, dirt, talk, running, bird,\\
+		&  river, car, leaf, grass, wind\\ 
+	kitchen & drawer, cutlery, microwave, dish, kettle, \\ 
+		& talk, bowl, phone, toaster, running+water\\ 
+	street & car, truck, subway, talk, traffic, \\ 
+		& engine, siren, phone, running, laughter \\ 
 	\hline
 	\end{tabular}
 	}
@@ -330,33 +340,31 @@
 \subsection{Audio Segmentation}
 \begin{frame}
 	\frametitle{Audio Segmentation}	
-	In testing, we segment the audio into smaller parts for event detection. 
-	We set two thresholds based on the following two features: 
-	\begin{enumerate}
-		\item{Frame Energy} \\ 
-		The averaged energy of a frame, calculated as: 
-		\begin{equation}
-		E_i = \frac{\sum\limits_{n=1}^N(x_i(n))}{N}
-		\end{equation}
-		\item{Spectral Centroid} \\ 
-		The ``center'' of frequency, calculated as: 
-		\begin{equation}
-		C_i = \frac{\sum\limits_{k=1}^Nk\times Amp(k)}{\sum\limits_{k=1}^NAmp(k)}
-		\end{equation}
-	\end{enumerate}
-\end{frame}
-% ------------------------------------------
-\begin{frame}
-	\frametitle{Audio Segmentation}
+	Scene-Event map is used when we have detected the events. \\ 
+	We need to cut testing clips into segments for event detection. \\ 
+	\pause 
 	\begin{figure}
 	\includegraphics[scale=0.5]{figure/tune_part.eps}
 	\caption{A example audio clip}
 	\end{figure}
+	%\begin{enumerate}
+	%	\item{Frame Energy} \\ 
+	%	The averaged energy of a frame, calculated as: 
+	%	\begin{equation}
+	%	E_i = \frac{\sum\limits_{n=1}^N(x_i(n))}{N}
+	%	\end{equation}
+	%	\item{Spectral Centroid} \\ 
+	%	The ``center'' of frequency, calculated as: 
+	%	\begin{equation}
+	%	C_i = \frac{\sum\limits_{k=1}^Nk\times Amp(k)}{\sum\limits_{k=1}^NAmp(k)}
+	%	\end{equation}
+	%\end{enumerate}
 \end{frame}
 % ------------------------------------------
 \begin{frame}
 	\frametitle{Audio Segmentation}
-	
+	We use frame energy and frequency to filter out silence and noise. \\ 	
+	\vspace{-0.25cm}
 	\begin{figure}[htb]
 	\centering
 	\includegraphics[scale=0.5]{figure/segment.pdf}
@@ -439,7 +447,8 @@
 \begin{frame}
 	\frametitle{Scene Recognition Evaluation}
 	In scene recognition, we choose 10 scenes, each scene has 10 clips. \\ 	
-	Accuracy for other 4 systems are calculated using 5-fold cross validation.
+	Accuracy for other 4 systems are calculated using 5-fold cross validation. 
+	Our system achieve an accuracy of 57\%.
 	\begin{figure}[htb!]
 	\centering
 	\resizebox{0.8\totalheight}{!}{\input{figure/sceneeval.tex}}
