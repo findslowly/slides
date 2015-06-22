@@ -11,8 +11,9 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows}
 \tikzstyle{arrow} = [thick,->,>=stealth]
-\tikzstyle{roundRec} = [rectangle, rounded corners, minimum width=2cm, minimum height=0.8cm,text centered, draw=black]
-\tikzstyle{rec} = [rectangle, minimum width=2cm, minimum height=0.8cm,text centered, draw=black]
+\tikzstyle{roundRec} = [rectangle, rounded corners, minimum width=1.5cm, minimum height=1cm,text centered, draw=black]
+\tikzstyle{roundRecS} = [rectangle, rounded corners, minimum width=1.5cm, minimum height=0.5cm,text centered, draw=black]
+\tikzstyle{rec} = [rectangle, minimum width=1.5cm, minimum height=1cm,text centered, draw=black]
 \DeclareGraphicsExtensions{.pdf,.eps,.png,.jpg,.jpeg}
 \graphicspath{{./figure/}}
 
@@ -69,14 +70,12 @@
 \subsection{Problem Description}
 \begin{frame}
   \frametitle{Problem Description}
-	In this project, our problem is to recognize a scene where an audio is recorded. 
-	Sound example: \\ 
+	In this project, our problem is to recognize a scene where an audio is recorded. \\ 
 	
-	\sound[label=show1, inlinesound]{}{show.wav}
-	\hyperlinkmovie[start=0s]{show1}{\beamerbutton{Play Sound}} \\
+	%\sound[label=show1, inlinesound]{}{show.wav}
+	%\hyperlinkmovie[start=0s]{show1}{\beamerbutton{Play Sound}} \\
 
 	%waveform 
-	\pause
 	\vspace{0.5cm}
 	\begin{columns}[c]
 		\begin{column}{0.5\textwidth}
@@ -99,7 +98,6 @@
 	Our approach is to detect the audible events in a clip. \\
 	Then infer the scene from the detected events. 	
 		
-	\pause
 	\vspace{0.5cm}
 	\begin{columns}[c]
 		\begin{column}{0.5\textwidth}
@@ -125,7 +123,8 @@
 	\frametitle{Our Approach vs. Other Approaches}
 	\begin{columns}[c]
 		\begin{column}{0.5\textwidth}
-			Our approach:
+			Our approach:\\ 
+			\vspace{0.5cm}
 			\begin{tikzpicture}[node distance=1.5cm]
 				\node (audio) [roundRec] {Audio}; 
 				\node (event) [roundRec, below of=audio] {Event detection}; 
@@ -135,7 +134,8 @@
 			\end{tikzpicture}
 		\end{column}
 		\begin{column}{0.5\textwidth}
-			Other approaches:
+			Other approaches: \\ 
+			\vspace{0.5cm}
 			\begin{tikzpicture}[node distance=1.5cm]
 				\node (audio) [roundRec] {Audio}; 
 				\node (scene) [roundRec, below of=event] {Scene recognition}; 
@@ -150,8 +150,8 @@
 \subsection{Audible Event Taxonomy}
 \begin{frame}
 	\frametitle{Audible Event Taxonomy}	
-	We labelled common audible events into 4 classes,\\
-	there are 120 events in total. \\ 
+	We labelled common audible events into 4 classes.\\
+	There are 120 events in total. \\ 
 	\vspace{0.5cm}
 	\begin{tikzpicture}[node distance=1.5cm]
 		\node (event) [roundRec] {Audible Events}; 
@@ -161,7 +161,7 @@
 		\node (other) [roundRec, below of=event, xshift=4cm] {Other Sound}; 
 		\node (movement) [roundRec, below of=human] {Movement}; 
 		\node (nonmovement) [roundRec, below of=human, xshift=3cm] {Non-Movement}; 
-		\node (events) [rec, below of=nonmovement] {cough, laughter, ...}; 
+		\node (events) [rec, below of=nonmovement] {\textcolor{blue}{cough}, \textcolor{blue}{laughter}, ...}; 
 		\draw [arrow] (event) -- (human);
 		\draw [arrow] (event) -- (nonliving);
 		\draw [arrow] (event) -- (nature);
@@ -176,28 +176,27 @@
 \begin{frame}
   \frametitle{Audio Data}	
 	We download the audio data for events from \\ Sound Search Engines (SSEs). \\ 
-	For example, when query ``cough'' in SSE: \\ 
-	\includegraphics[scale=0.4]{figure/cough.png}
+	For example, when we query ``cough'' in SSE: \\ 
+	\begin{figure}
+	\includegraphics[scale=0.35]{figure/cough.png}
+	\end{figure}
+	We download clips from 1 second to 60 seconds. 
 \end{frame}
 % ------------------------------------------
 \subsection{Preprocess and Feature Extraction}
 \begin{frame}
-	\frametitle{Noise Reduction}
-	denoise here
-\end{frame}
-% ------------------------------------------
-\begin{frame}
-	\frametitle{Feature Extraction}
-	The features we extracted from audios are \\ 
-	Mel-Frequency Cepstral Coefficients (MFCCs). 
+	\frametitle{Preprocess and Feature Extraction}
+	We first use Minimum Statistics to calculate the noise spectrum and subtract it from the input signal. \\ 
+	Then we extract Mel-Frequency Cepstral Coefficients (MFCCs) from denoised signal.\\  
+	\pause 
 	% flowchart of mfcc 
-	\begin{tikzpicture}[node distance=1.2cm]
-		\node (audio) [roundRec] {Audio}; 
-		\node (frame) [roundRec, below of=audio] {Framing and Windowing}; 
-		\node (fft) [roundRec, below of=frame] {Fast Fourier Transform (FFT)}; 
-		\node (mel) [roundRec, below of=fft] {Mel filtering}; 
-		\node (envelope) [roundRec, below of=mel] {Extract spectral envelope}; 
-		\node (mfcc) [roundRec, below of=envelope] {MFCCs}; 
+	\begin{tikzpicture}[node distance=1cm]
+		\node (audio) [roundRecS] {Denoised signal}; 
+		\node (frame) [roundRecS, below of=audio] {Framing}; 
+		\node (fft) [roundRecS, below of=frame] {Fast Fourier Transform (FFT)}; 
+		\node (mel) [roundRecS, below of=fft] {Mel filtering}; 
+		\node (envelope) [roundRecS, below of=mel] {Extract spectral envelope}; 
+		\node (mfcc) [roundRecS, below of=envelope] {MFCCs}; 
 		\draw [arrow] (audio) -- (frame);
 		\draw [arrow] (frame) -- (fft); 
 		\draw [arrow] (fft) -- (mel); 
@@ -210,15 +209,17 @@
 \subsection{Event Model}
 \begin{frame}
 	\frametitle{Event Model}	
-	We use Gaussian Mixture Models to train the features. 
+	We use features to train Gaussian Mixture Models (GMMs). \\ 
+	The training is done by Expectation-Maximization (EM) algorithm. \\  
 	\begin{figure}
-		\resizebox{0.8\totalheight}{!}{\input{figure/gmm.tex}}
-		\caption{GMM with three components}
+		%\resizebox{0.8\totalheight}{!}{\input{figure/gmm.png}}
+		\includegraphics[scale=0.6]{figure/gmm.pdf}
+		\caption{A GMM with three components}
 	\end{figure}
 \end{frame}
 % ------------------------------------------
 \section{Scene Recognition}
-\subsection{Scene-Event Map}
+\subsection{Scene Extraction}
 \begin{frame}
 	\frametitle{Scene Extraction}	
 	We use the scripts for movies, plays and TV series to extract the scenes. \\ 
@@ -233,7 +234,6 @@
 		\hline
 		\end{tabular}
 	\end{table}
-
 \end{frame}
 % ------------------------------------------
 \begin{frame}
@@ -242,10 +242,10 @@
 	\begin{itemize}
 		\item{Person names} 
 		\item{Time indicator}
-		\item{Adjective, determiner, ...}
+		\item{Location names}
+		\item{Adjective, determiner, number, ...}
 	\end{itemize}
-	\pause 
-	
+
 	\begin{table}[htb]
 	\centering
 	\caption{Top 10 Occurred Scenes}
@@ -270,9 +270,11 @@
 	\end{table}
 \end{frame}
 % ------------------------------------------
+\subsection{Scene-Event Relation Mining}
 \begin{frame}
 	\frametitle{Scene-Event Relation Mining}
-	We first match audible events in a context, and count their occurrence. 
+	To get the relation between scenes and audible events, \\ 
+	we match the context in a script with our predefined audible events. \\ 
 	\begin{table}[h]
 		\begin{tabular}{|l|}
 		\hline
@@ -292,7 +294,7 @@
 		$f(e,s)$ is the number of contexts $e$ appears in all contexts under scene $s$. 
 		\item{$IDF=1+log(\frac{N}{N_e})$} \\ 
 		$N$ is the number of scenes. 
-		$N_e$ is the number of scene that event $e$ appears. 
+		$N_e$ is the number of scenes in which event $e$ appears. 
 	\end{enumerate}
 	These two scores are then multiplied, and used as the importance of an event to a scene. 		
 	\begin{equation}
@@ -301,6 +303,7 @@
 \end{frame}
 % ------------------------------------------
 \begin{frame}
+	\frametitle{Scene-Event Relation Mining}
 	\begin{table}[htb!]
 	\caption{An example of scene-event map}
 	\resizebox{1\textwidth}{!}{
@@ -345,6 +348,14 @@
 % ------------------------------------------
 \begin{frame}
 	\frametitle{Audio Segmentation}
+	\begin{figure}
+	\includegraphics[scale=0.5]{figure/tune_part.eps}
+	\caption{A example audio clip}
+	\end{figure}
+\end{frame}
+% ------------------------------------------
+\begin{frame}
+	\frametitle{Audio Segmentation}
 	
 	\begin{figure}[htb]
 	\centering
@@ -358,26 +369,64 @@
 \begin{frame}
 	\frametitle{Scene Inference}	
 	For each segment, we evaluate it with our trained GMMs. \\ 
-	Then we rank events by their posterior scores, the top three events are chosen as the candidates. 
-	We add the TFIDF scores to scene which contain the detected events. 
+	We choose the top three detected events for scene voting. \\ 
+	\begin{tikzpicture}[node distance=1.5cm, every text node part/.style={align=center}]
+		\centering
+		\node (audio) [roundRec] {Test audio}; 
+		\node (seg1) [roundRec, below of=audio, xshift=-2cm] {Seg 1}; 
+		\node (seg2) [roundRec, below of=audio] {Seg 2}; 
+		\node (segn) [roundRec, below of=audio, xshift=2cm] {Seg n}; 
+		\node (event1) [roundRec, below of=seg1] {Event 1, \\ Event 2, \\ Event 3}; 
+		\node (event2) [roundRec, below of=seg2] {Event 1, \\ Event 2, \\ Event 3}; 
+		\node (eventn) [roundRec, below of=segn] {Event 1, \\ Event 2, \\ Event 3}; 
+		\node (map) [roundRec, below of=event2] {Scene-event map}; 	
+		\node (scene) [roundRec, below of=map] {Recognized scene};
+		\draw [arrow] (audio) -- (seg1);
+		\draw [arrow] (audio) -- (seg2);
+		\draw [arrow] (audio) -- (segn);
+		\draw [arrow] (seg1) -- (event1); 
+		\draw [arrow] (seg2) -- (event2); 
+		\draw [arrow] (segn) -- (eventn); 
+		\draw [arrow] (event1) -- (map); 
+		\draw [arrow] (event2) -- (map); 
+		\draw [arrow] (eventn) -- (map); 
+		\draw [arrow] (map) -- (scene); 
+	\end{tikzpicture}
 \end{frame}
 % ------------------------------------------
 \section{Evaluation}
 \subsection{Event Detection Evaluation}
 \begin{frame}
 	\frametitle{Component Number Evaluation}
-	Event detection F-measure with different component numbers. \\ 	
+	Gaussian Mixture Model distribution: \\ 
+	\begin{equation}
+	P(\mathbf{x}|\mathbf{\pi},\mathbf{\mu},\Sigma) = \sum_{k = 1}^{\textcolor{red}{M}} \pi_k
+	\mathcal{N}(\mathbf{x}|\mathbf{\mu}_k, \Sigma_k),
+	\end{equation} 
+
 	\begin{figure}[htb!]
 	\centering
-	\resizebox{0.8\totalheight}{!}{\input{figure/component.tex}}
+	\resizebox{0.75\totalheight}{!}{\input{figure/component.tex}}
 	\caption{F-measure for different component number}
 	\label{fig:component}
 	\end{figure}
 \end{frame}
 % ------------------------------------------
 \begin{frame}
+	\frametitle{Componnent Number Evaluation}
+	After comparing F-measure and running time, we choose 18 as our component number. 
+	\begin{figure}[htb!]
+	\centering
+	\resizebox{0.8\totalheight}{!}{\input{figure/componentTime.tex}}
+	\caption{Running time for different component number}
+	\label{fig:component}
+	\end{figure}
+\end{frame}
+% ------------------------------------------
+\begin{frame}
 	\frametitle{Event Detection Evaluation}
-	We compare our event detection with other systems. 	
+	A event detection task of 16 events. \\ 
+	The other six systems are chosen from IEEE AASP Challenge. 
 	\begin{figure}[htb!]
 	\centering
 	\resizebox{0.8\totalheight}{!}{\input{figure/eventdetectF1.tex}}
@@ -388,23 +437,24 @@
 % ------------------------------------------
 \subsection{Scene Recognition Evaluation}
 \begin{frame}
-	\frametitle{Denoise Evaluation}
-	
+	\frametitle{Scene Recognition Evaluation}
+	In scene recognition, we choose 10 scenes, each scene has 10 clips. \\ 	
+	Accuracy for other 4 systems are calculated using 5-fold cross validation.
 	\begin{figure}[htb!]
 	\centering
-	\resizebox{0.8\totalheight}{!}{\input{figure/ourTuning.tex}}
-	\caption{Recognition accuracy for our different models}
-	\label{fig:ourTuning}
+	\resizebox{0.8\totalheight}{!}{\input{figure/sceneeval.tex}}
+	\caption{Recognition accuracy for 10 audio scenes}
+	\label{fig:sceneeval}
 	\end{figure}
 \end{frame}
 % ------------------------------------------
 \begin{frame}
 	\frametitle{Scene Recognition Evaluation}
-	
+	Detailed result of our system with the best system \textit{GSR}. \\ 
 	\begin{figure}[htb!]
 	\centering
-	\resizebox{0.8\totalheight}{!}{\input{figure/sceneeval.tex}}
-	\caption{Recognition accuracy for 10 audio scenes}
+	\resizebox{0.8\totalheight}{!}{\input{figure/ourgsr.tex}}
+	\caption{10 scenes comparison}
 	\label{fig:sceneeval}
 	\end{figure}
 \end{frame}
