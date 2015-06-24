@@ -4,7 +4,7 @@ set grid
 set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 ps 1.5   # --- blue
 set style line 2 lc rgb '#FF9F52' lt 1 lw 2 pt 7 ps 1.5 
 set key off
-set ylabel "Average Accuracy"
+set ylabel "\\LARGE{Average Accuracy}"
 set yrange [0 : 0.7]
 
 set boxwidth 0.5

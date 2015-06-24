@@ -11,7 +11,7 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows}
 \tikzstyle{arrow} = [thick,->,>=stealth]
-\tikzstyle{roundRec} = [rectangle, rounded corners, minimum width=1.5cm, minimum height=1cm,text centered, draw=black]
+\tikzstyle{roundRec} = [rectangle, rounded corners, minimum width=1.5cm, minimum height=0.8cm,text centered, draw=black]
 \tikzstyle{roundRecS} = [rectangle, rounded corners, minimum width=1.5cm, minimum height=0.5cm,text centered, draw=black]
 \tikzstyle{rec} = [rectangle, minimum width=1.5cm, minimum height=1cm,text centered, draw=black]
 \DeclareGraphicsExtensions{.pdf,.eps,.png,.jpg,.jpeg}
@@ -45,7 +45,7 @@
   {\color{blue!25}}}
 % ------------------------------------------
 \title{Audio Event Detection for \\ Automatic Scene Recognition}
-\author{Xun Xu}
+\author{Xu Xun}
 \institute[CS SJTU]{Department of Computer Science and Engineering \\ Shanghai
   Jiao Tong University}
 \date{\today}
@@ -59,8 +59,8 @@
 
 % show outline when switch sections
 \AtBeginSection[]{
-  \begin{frame}<trans|beamer>[shrink=25]{Outline}
-    \tableofcontents[sectionstyle=show/shaded,subsectionstyle=show/show/hide]
+  \begin{frame}<trans|beamer>[shrink=10]{Outline}
+    \tableofcontents[sectionstyle=show/shaded,subsectionstyle=hide]
   \end{frame}
 }
 
@@ -72,48 +72,59 @@
   \frametitle{Problem Description}
 	In this project, our problem is to recognize a scene where an audio is recorded. \\ 
 	
-	%\sound[label=show1, inlinesound]{}{show.wav}
-	%\hyperlinkmovie[start=0s]{show1}{\beamerbutton{Play Sound}} \\
+	\sound[label=show1, inlinesound]{}{show.wav}
+	\hyperlinkmovie[start=0s]{show1}{\beamerbutton{Play Sound}} \\
 
+	\pause
 	%waveform 
 	\vspace{0.5cm}
 	\begin{columns}[c]
 		\begin{column}{0.5\textwidth}
-			\includegraphics[scale=0.4]{./figure/tune_part.eps}
+			\includegraphics[scale=0.4]{./figure/office.eps}
 		\end{column}
 		\begin{column}{0.05\textwidth}
 			\centering
 			$\Rightarrow$
 		\end{column}
 		\begin{column}{0.45\textwidth}
-			\em{concert}
+			\em{office}
 		\end{column}
 	\end{columns}
 
 \end{frame}
 % ------------------------------------------
+\begin{frame}
+	\frametitle{Problem Description}
+	\begin{itemize}
+		\item{Scene\\} 
+		An acoustic environment, like \textit{office}, \textit{bathroom}, etc. \\ 
+		\item{Event\\} 
+		A more short, primitive sound, like \textit{phone}, \textit{printer}, etc.
+	\end{itemize}
+\end{frame}
+% ------------------------------------------
 \subsection{Approach}
 \begin{frame}
-  \frametitle{Our Approach}
+  \frametitle{Our approach}
 	Our approach is to detect the audible events in a clip. \\
 	Then infer the scene from the detected events. 	
 		
 	\vspace{0.5cm}
 	\begin{columns}[c]
 		\begin{column}{0.5\textwidth}
-			\includegraphics[scale=0.4]{./figure/tune_part.eps}
+			\includegraphics[scale=0.4]{./figure/office.eps}
+		\end{column}
+		\begin{column}{0.05\textwidth}
+			$\Rightarrow$
+		\end{column}
+		\begin{column}{0.15\textwidth}
+			\textit{phone, printer}
 		\end{column}
 		\begin{column}{0.05\textwidth}
 			$\Rightarrow$
 		\end{column}
 		\begin{column}{0.2\textwidth}
-			\em{applause, instrument}
-		\end{column}
-		\begin{column}{0.05\textwidth}
-			$\Rightarrow$
-		\end{column}
-		\begin{column}{0.2\textwidth}
-			\em{concert}
+			\textit{office}
 		\end{column}
 	\end{columns}
 
@@ -125,6 +136,7 @@
 		\begin{column}{0.5\textwidth}
 			Our approach:\\ 
 			\vspace{0.5cm}
+			\resizebox{0.8\textwidth}{!}{
 			\begin{tikzpicture}[node distance=1.5cm]
 				\node (audio) [roundRec] {Audio}; 
 				\node (event) [roundRec, below of=audio] {Event detection}; 
@@ -132,15 +144,18 @@
 				\draw [arrow] (audio) -- (event);
 				\draw [arrow] (event) -- (scene); 
 			\end{tikzpicture}
+			}
 		\end{column}
 		\begin{column}{0.5\textwidth}
 			Other approaches: \\ 
 			\vspace{0.5cm}
+			\resizebox{0.8\textwidth}{!}{
 			\begin{tikzpicture}[node distance=1.5cm]
 				\node (audio) [roundRec] {Audio}; 
 				\node (scene) [roundRec, below of=event] {Scene recognition}; 
 				\draw [arrow] (audio) -- (scene);
 			\end{tikzpicture}
+			}
 		\end{column}
 	\end{columns}
 
@@ -153,22 +168,28 @@
 	We labelled common audible events into 4 classes.\\
 	There are 120 events in total. \\ 
 	\vspace{0.5cm}
-	\begin{tikzpicture}[node distance=1.5cm]
+	\begin{tikzpicture}[node distance=1.5cm, every text node part/.style={align=center}]
 		\node (event) [roundRec] {Audible Events}; 
 		\node (human) [roundRec, below of=event, xshift=-4cm] {Human}; 
 		\node (nonliving) [roundRec, below of=event, xshift=-1.25cm] {Non-Living}; 
 		\node (nature) [roundRec, below of=event, xshift=1.25cm] {Nature}; 
 		\node (other) [roundRec, below of=event, xshift=4cm] {Other Sound}; 
-		\node (movement) [roundRec, below of=human] {Movement}; 
-		\node (nonmovement) [roundRec, below of=human, xshift=3cm] {Non-Movement}; 
-		\node (events) [rec, below of=nonmovement] {\textcolor{blue}{cough}, \textcolor{blue}{laughter}, ...}; 
+		\node (movement) [roundRec, below of=human, xshift=-1cm] {Movement}; 
+		\node (nonmovement) [roundRec, below of=human, xshift=2cm] {Non-Movement}; 
+		\node (animal) [roundRec, below of=nature] {Animal}; 
+		\node (events1) [rec, below of=movement] {\textcolor{blue}{footstep}, \\ \textcolor{blue}{running}, \\ ...}; 
+		\node (events2) [rec, below of=nonmovement] {\textcolor{blue}{cough}, \\ \textcolor{blue}{laughter}, \\ ...}; 
+		\node (events3) [rec, below of=animal] {\textcolor{blue}{dog}, \\ \textcolor{blue}{cat}, \\ ...}; 
 		\draw [arrow] (event) -- (human);
 		\draw [arrow] (event) -- (nonliving);
 		\draw [arrow] (event) -- (nature);
 		\draw [arrow] (event) -- (other); 
 		\draw [arrow] (human) -- (movement); 
 		\draw [arrow] (human) -- (nonmovement); 
-		\draw [arrow] (nonmovement) -- (events); 
+		\draw [arrow] (nature) -- (animal); 
+		\draw [arrow] (movement) -- (events1); 
+		\draw [arrow] (nonmovement) -- (events2); 
+		\draw [arrow] (animal) -- (events3); 
 	\end{tikzpicture}
 \end{frame}
 % ------------------------------------------
@@ -229,56 +250,56 @@
 \end{frame}
 % ------------------------------------------
 \section{Scene Recognition}
-\subsection{Scene Extraction}
-\begin{frame}
-	\frametitle{Scene Extraction}	
-	We use the scripts for movies, plays and TV series to extract the scenes. \\ 
-	Below is a script example. 
-	We call it a \textit{context}, including a \textit{scene-switching sentence}, and its content. 
-	\begin{table}[h]
-		\begin{tabular}{|l|}
-		\hline
-		INT. LEONARD'S \textcolor{red}{BATHROOM} - Night \\ 
-		Leonard turns on the light, revealing a shower, toilet and sink.\\
-		He removes toiletries from the grocery bag and places them inside. \\ 
-		\hline
-		\end{tabular}
-	\end{table}
-\end{frame}
-% ------------------------------------------
-\begin{frame}
-	\frametitle{Scene Extraction}
-	We use Natural Language Process (NLP) tools to process the \textit{scene-switching sentence}, and eliminate the following type of words: \\ 
-	\begin{itemize}
-		\item{Person names} 
-		\item{Time indicator}
-		\item{Location names}
-		\item{Adjective, determiner, number, ...}
-	\end{itemize}
-
-	\begin{table}[htb]
-	\centering
-	\caption{Top 10 Occurred Scenes}
-	\resizebox{0.3\textwidth}{!}{
-		\begin{tabular}{ll}
-		\hline
-		Scene & Occurrence \\
-		\hline
-		house & 3537 \\ 
-		office & 3259 \\ 
-		apartment & 2919 \\ 
-		room & 2580 \\ 
-		bedroom & 2257 \\ 
-		car & 1699 \\ 
-		street & 1622 \\ 
-		kitchen & 1431 \\ 
-		living room & 1374 \\ 
-		tardis & 1259 \\ 
-		\hline
-		\end{tabular}
-	}
-	\end{table}
-\end{frame}
+%\subsection{Scene Extraction}
+%\begin{frame}
+%	\frametitle{Scene Extraction}	
+%	We use the scripts for movies, plays and TV series to extract the scenes. \\ 
+%	Below is a script example. 
+%	We call it a \textit{context}, including a \textit{scene-switching sentence}, and its content. 
+%	\begin{table}[h]
+%		\begin{tabular}{|l|}
+%		\hline
+%		INT. LEONARD'S \textcolor{red}{BATHROOM} - Night \\ 
+%		Leonard turns on the light, revealing a shower, toilet and sink.\\
+%		He removes toiletries from the grocery bag and places them inside. \\ 
+%		\hline
+%		\end{tabular}
+%	\end{table}
+%\end{frame}
+%% ------------------------------------------
+%\begin{frame}
+%	\frametitle{Scene Extraction}
+%	We use Natural Language Process (NLP) tools to process the \textit{scene-switching sentence}, and eliminate the following type of words: \\ 
+%	\begin{itemize}
+%		\item{Person names} 
+%		\item{Time indicator}
+%		\item{Location names}
+%		\item{Adjective, determiner, number, ...}
+%	\end{itemize}
+%
+%	\begin{table}[htb]
+%	\centering
+%	\caption{Top 10 Occurred Scenes}
+%	\resizebox{0.3\textwidth}{!}{
+%		\begin{tabular}{ll}
+%		\hline
+%		Scene & Occurrence \\
+%		\hline
+%		house & 3537 \\ 
+%		office & 3259 \\ 
+%		apartment & 2919 \\ 
+%		room & 2580 \\ 
+%		bedroom & 2257 \\ 
+%		car & 1699 \\ 
+%		street & 1622 \\ 
+%		kitchen & 1431 \\ 
+%		living room & 1374 \\ 
+%		tardis & 1259 \\ 
+%		\hline
+%		\end{tabular}
+%	}
+%	\end{table}
+%\end{frame}
 % ------------------------------------------
 \subsection{Scene-Event Relation Mining}
 \begin{frame}
@@ -296,21 +317,21 @@
 	\end{table}
 \end{frame}
 % ------------------------------------------
-\begin{frame}
-	\frametitle{Scene-Event Relation Mining}
-	Based on the idea of Term-Frequency-Inverse Document Frequency (TFIDF), we calculate two scores of an event $e$, to a scene $s$. 
-	\begin{enumerate}
-		\item{$TF=log(1+f(e,s))$}\\
-		$f(e,s)$ is the number of contexts $e$ appears in all contexts under scene $s$. 
-		\item{$IDF=1+log(\frac{N}{N_e})$} \\ 
-		$N$ is the number of scenes. 
-		$N_e$ is the number of scenes in which event $e$ appears. 
-	\end{enumerate}
-	These two scores are then multiplied, and used as the importance of an event to a scene. 		
-	\begin{equation}
-		TFIDF = TF \times IDF 
-	\end{equation}	
-\end{frame}
+%\begin{frame}
+%	\frametitle{Scene-Event Relation Mining}
+%	Based on the idea of Term-Frequency-Inverse Document Frequency (TFIDF), we calculate two scores of an event $e$, to a scene $s$. 
+%	\begin{enumerate}
+%		\item{$TF=log(1+f(e,s))$}\\
+%		$f(e,s)$ is the number of contexts $e$ appears in all contexts under scene $s$. 
+%		\item{$IDF=1+log(\frac{N}{N_e})$} \\ 
+%		$N$ is the number of scenes. 
+%		$N_e$ is the number of scenes in which event $e$ appears. 
+%	\end{enumerate}
+%	These two scores are then multiplied, and used as the importance of an event to a scene. 		
+%	\begin{equation}
+%		TFIDF = TF \times IDF 
+%	\end{equation}	
+%\end{frame}
 % ------------------------------------------
 \begin{frame}
 	\frametitle{Scene-Event Relation Mining}
@@ -342,7 +363,6 @@
 	\frametitle{Audio Segmentation}	
 	Scene-Event map is used when we have detected the events. \\ 
 	We need to cut testing clips into segments for event detection. \\ 
-	\pause 
 	\begin{figure}
 	\includegraphics[scale=0.5]{figure/tune_part.eps}
 	\caption{A example audio clip}
@@ -431,18 +451,6 @@
 	\end{figure}
 \end{frame}
 % ------------------------------------------
-\begin{frame}
-	\frametitle{Event Detection Evaluation}
-	A event detection task of 16 events. \\ 
-	The other six systems are chosen from IEEE AASP Challenge. 
-	\begin{figure}[htb!]
-	\centering
-	\resizebox{0.8\totalheight}{!}{\input{figure/eventdetectF1.tex}}
-	\caption{Event Detection F-Measure}
-	\label{fig:eventdetectF1}
-	\end{figure}
-\end{frame}
-% ------------------------------------------
 \subsection{Scene Recognition Evaluation}
 \begin{frame}
 	\frametitle{Scene Recognition Evaluation}
@@ -462,21 +470,26 @@
 	Detailed result of our system with the best system \textit{GSR}. \\ 
 	\begin{figure}[htb!]
 	\centering
-	\resizebox{0.8\totalheight}{!}{\input{figure/ourgsr.tex}}
-	\caption{10 scenes comparison}
+	\resizebox{0.9\totalheight}{!}{\input{figure/ourgsr.tex}}
+	\caption{10-scenes classification}
 	\label{fig:sceneeval}
 	\end{figure}
+\end{frame}
+% ------------------------------------------
+\section{Conclusion}
+\begin{frame}
+	\frametitle{Conclusion}
+	\begin{itemize}
+		\item{We build a scene recognition system from event detection.\\}
+		\item{Our system has the advantange of expanding to many scenes without new scene data.\\}
+		\item{We could outperform existing approaches in scenes where audible events are easy to capture.\\}
+	\end{itemize}
 \end{frame}
 % ------------------------------------------
 \section{Demo}
 \begin{frame}
 	\frametitle{Demo}
 	Live demo for our system. 
-\end{frame}
-% ------------------------------------------
-\begin{frame}
-	\frametitle{Acknowledgement}
-	I would like to thank my advisor Kenny Q. Zhu, and my friend Xinyu Hua for their help in this project. 
 \end{frame}
 % ------------------------------------------
 %\setbeamertemplate{background canvas}[vertical shading][bottom=white,top=structure.fg!25]
